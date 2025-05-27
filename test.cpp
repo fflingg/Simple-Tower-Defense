@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include "grid.h"
+#include "enemy.h"
 #include <vector>
 
 
@@ -15,27 +16,29 @@ int main()
     sf::View uiView = window.getDefaultView();
     sf::View gameView = window.getView();
 
-    // test things here//
-
+    //UI for prebuilding
     sf::RectangleShape yellowBlock(sf::Vector2f(150.f, 150.f));
     yellowBlock.setFillColor(sf::Color::Yellow);
     yellowBlock.setPosition(0, 1080.f - 200.f);
     bool preBuilding = false;
     bool isBuilding = false;
     bool canBuildHere = true;
-
     sf::RectangleShape smallBlock(sf::Vector2f(blockSize - borderWidth, blockSize- borderWidth));
     smallBlock.setFillColor(sf::Color::Yellow);
-    ////////////////////
+
 
     std::vector<Infrastructure> infrastructures;
     // init the blocks
     std::vector<std::vector<Block>> blocks;
-
     initGrid(blocks, gridRow, gridColumn, blockSize);
 
     // get a clock for time-based update
     sf::Clock clock;
+
+    //test an enemy here
+    Enemy testEnemy;
+    
+    //
 
     /////////////////////////////////////////////////////////////////
     ///////////////////////// update ////////////////////////////////
