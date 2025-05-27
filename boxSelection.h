@@ -9,6 +9,7 @@
 class BoxSelection
 {
 public:
+    std::vector<Infrastructure*> selectedInfrastructures;
     BoxSelection()
     {
         isDragging = false;
@@ -51,17 +52,17 @@ public:
         }
     }
 
-    std::vector<Infrastructure*> getSelected(const std::vector<Infrastructure>& infrastructures)
+    void getSelected(const std::vector<Infrastructure>& infrastructures)
     {
-        std::vector<Infrastructure*> selected;
+        selectedInfrastructures.clear();
         for (auto& infra : infrastructures)
         {
             if (selectionBounds.intersects(infra.rectRender.getGlobalBounds()))
             {
-                selected.push_back(const_cast<Infrastructure*>(&infra)); 
+                selectedInfrastructures.push_back(const_cast<Infrastructure*>(&infra)); 
             }
         }
-        return selected;
+
     }
 
     void clearSelection()

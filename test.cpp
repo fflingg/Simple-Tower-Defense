@@ -43,6 +43,7 @@ int main()
     // vox selection
     BoxSelection boxSelection;
 
+
     /////////////////////////////////////////////////////////////////
     ///////////////////////// update ////////////////////////////////
     /////////////////////////////////////////////////////////////////
@@ -93,12 +94,11 @@ int main()
 
         if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
         {
-            auto selectedInfras = boxSelection.getSelected(infrastructures);
-
-            for (auto *infra : selectedInfras)
+            boxSelection.getSelected(infrastructures);
+            
+            for (auto *infra : boxSelection.selectedInfrastructures)
             {
-                infra->rectRender.setOutlineColor(sf::Color::Red);
-                infra->rectRender.setOutlineThickness(3);
+                infra->activateAttackRangeView = true;
             }
         }
 
