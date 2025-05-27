@@ -1,13 +1,12 @@
 #include <SFML/Graphics.hpp>
+#include <vector>
 #include "grid.h"
 #include "enemy.h"
-#include <vector>
-
+#include "infrastructure.h"
 
 const int parallelResolution = 1920;
 const int verticalResolution = 1080;
 const float screenMoveSpeed = 1000.f;
-
 
 int main()
 {
@@ -16,16 +15,15 @@ int main()
     sf::View uiView = window.getDefaultView();
     sf::View gameView = window.getView();
 
-    //UI for prebuilding
+    // UI for prebuilding
     sf::RectangleShape yellowBlock(sf::Vector2f(150.f, 150.f));
     yellowBlock.setFillColor(sf::Color::Yellow);
     yellowBlock.setPosition(0, 1080.f - 200.f);
     bool preBuilding = false;
     bool isBuilding = false;
     bool canBuildHere = true;
-    sf::RectangleShape smallBlock(sf::Vector2f(blockSize - borderWidth, blockSize- borderWidth));
+    sf::RectangleShape smallBlock(sf::Vector2f(blockSize - borderWidth, blockSize - borderWidth));
     smallBlock.setFillColor(sf::Color::Yellow);
-
 
     std::vector<Infrastructure> infrastructures;
     // init the blocks
@@ -35,9 +33,10 @@ int main()
     // get a clock for time-based update
     sf::Clock clock;
 
-    //test an enemy here
+    // test an enemy here
     Enemy testEnemy;
-    
+    testEnemy.row = 9;
+    testEnemy.col = 20;
     //
 
     /////////////////////////////////////////////////////////////////
@@ -83,8 +82,34 @@ int main()
             movement.x += screenMoveSpeed;
         gameView.move(movement * deltaTime);
 
-        // deal with some ui
+        //activate/deactivate attack range preview
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left )
+        {
+            bool clickedOnInfrastructure = false;
 
+            for (auto &infra : infrastructures)
+            {
+                if (infra.rectRender.getGlobalBounds().contains(gameMousePos))
+                {
+                    infra.activateAttackRangeView = true;
+                    clickedOnInfrastructure = true;
+                }
+                else
+                {
+                    infra.activateAttackRangeView = false;
+                }
+            }
+
+            if (!clickedOnInfrastructure)
+            {
+                for (auto &infra : infrastructures)
+                {
+                    infra.activateAttackRangeView = false;
+                }
+            }
+        }
+
+        // deal with some ui
         if (yellowBlock.getGlobalBounds().contains(mousePos))
         {
             yellowBlock.setFillColor(sf::Color(200, 200, 0));
@@ -111,14 +136,14 @@ int main()
 
             gridPrebuilding(blocks, gridRow, gridColumn, true);
             canBuildHere = JudgeCanBuildHere(blocks, row, col);
-            //build the infrastructure
+            // build the infrastructure
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left && isBuilding && canBuildHere)
             {
-                setInfrastructure(YellowTower, row , col , blocks, infrastructures);
+                setInfrastructure(ArrowTowerType, row, col, blocks, infrastructures);
                 preBuilding = isBuilding = false;
                 gridPrebuilding(blocks, gridRow, gridColumn, false);
             }
-            //cancel the pre-building
+            // cancel the pre-building
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Right)
             {
                 preBuilding = isBuilding = false;
@@ -127,6 +152,8 @@ int main()
 
             isBuilding = true;
         }
+
+
 
         // update ends here
         // start render
@@ -141,7 +168,7 @@ int main()
                 window.draw(block.rectRender);
             }
         }
-        
+
         if (preBuilding)
             window.draw(smallBlock);
 
@@ -149,6 +176,7 @@ int main()
         {
 
             window.draw(infrastructure.rectRender);
+            drawAttackRange(window, infrastructure);
         }
 
         // render things that won't move

@@ -3,12 +3,13 @@
 
 #include <SFML/Graphics.hpp>
 
+
 const int blockSize = 50;
 const int borderWidth = 4;
 const int gridRow = 20;
 const int gridColumn = 20;
 
-const std::vector<std::vector<int>> map = {
+const std::vector<std::vector<int>> gridMap = {
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -40,12 +41,7 @@ enum BlockOccupy
     Empty
 };
 
-enum InfrastructureName
-{
-    YellowTower,
-    CommandCenter,
-    Mine
-};
+
 
 class Block
 {
@@ -56,18 +52,7 @@ public:
     sf::RectangleShape rectRender;
 };
 
-class Infrastructure
-{
-public:
-    int health;
-    std::string name;
-    int posR;
-    int posC;
-    int sizeR;
-    int sizeC;
-    sf::RectangleShape rectRender;
-};
-
+//initialize the gird
 void initGrid(std::vector<std::vector<Block>> &blocks, const int gridRow, const int gridColumn, const int blockSize)
 {
     blocks.resize(gridRow);
@@ -84,17 +69,17 @@ void initGrid(std::vector<std::vector<Block>> &blocks, const int gridRow, const 
             blocks[row][col].rectRender.setSize(sf::Vector2f(blockSize, blockSize));
             blocks[row][col].rectRender.setOutlineThickness(0);
             blocks[row][col].rectRender.setOutlineColor(sf::Color::Black);
-            if (map[row][col] == 0)
+            if (gridMap[row][col] == 0)
             {
                 blocks[row][col].rectRender.setFillColor(lightGray);
                 blocks[row][col].occupy = Empty;
             }
-            else if (map[row][col] == 1)
+            else if (gridMap[row][col] == 1)
             {
                 blocks[row][col].rectRender.setFillColor(sf::Color::Red);
                 blocks[row][col].occupy = Building;
             }
-            else if (map[row][col] == 2)
+            else if (gridMap[row][col] == 2)
             {
                 blocks[row][col].rectRender.setFillColor(sf::Color::White);
                 blocks[row][col].occupy = Road;
@@ -133,27 +118,7 @@ void gridPrebuilding(std::vector<std::vector<Block>> &blocks, const int gridRow,
     }
 }
 
-void setInfrastructure(InfrastructureName target, int rowPos, int colPos, std::vector<std::vector<Block>> &blocks, std::vector<Infrastructure> &infrastructures)
-{
-    if (target == YellowTower)
-    {
-        Infrastructure yTower;
-        yTower.health = 10;
-        yTower.name = "YellowTower";
-        yTower.sizeR = yTower.sizeC = 1;
-        yTower.posR = rowPos;
-        yTower.posC = colPos;
 
-        yTower.rectRender.setSize(sf::Vector2f(blockSize, blockSize));
-        yTower.rectRender.setFillColor(sf::Color::White);
-
-        float x = colPos * blockSize;
-        float y = rowPos * blockSize;
-        yTower.rectRender.setPosition(x, y);
-        yTower.rectRender.setFillColor(sf::Color::Yellow);
-        infrastructures.push_back(yTower);
-    }
-}
 
 bool JudgeCanBuildHere(const std::vector<std::vector<Block>> &blocks, int row, int col)
 {
