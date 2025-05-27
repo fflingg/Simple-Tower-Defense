@@ -132,6 +132,9 @@ bool JudgeCanBuildHere(const std::vector<std::vector<Block>> &blocks, int row, i
         return false;
     }
 
+    if(blocks[row][col].occupy == Building){
+        return false;
+    }
     return true;
 }
 

@@ -3,6 +3,7 @@
 #include "grid.h"
 #include "enemy.h"
 #include "infrastructure.h"
+#include "boxSelection.h"
 
 const int parallelResolution = 1920;
 const int verticalResolution = 1080;
@@ -15,15 +16,16 @@ int main()
     sf::View uiView = window.getDefaultView();
     sf::View gameView = window.getView();
 
-    // UI for prebuilding
-    sf::RectangleShape yellowBlock(sf::Vector2f(150.f, 150.f));
-    yellowBlock.setFillColor(sf::Color::Yellow);
-    yellowBlock.setPosition(0, 1080.f - 200.f);
-    bool preBuilding = false;
-    bool isBuilding = false;
-    bool canBuildHere = true;
-    sf::RectangleShape smallBlock(sf::Vector2f(blockSize - borderWidth, blockSize - borderWidth));
-    smallBlock.setFillColor(sf::Color::Yellow);
+    // UI for prebuilding/////////////////////////////////////////////////////////////////////////////////////
+    sf::RectangleShape yellowBlock(sf::Vector2f(150.f, 150.f));                                    ///
+    yellowBlock.setFillColor(sf::Color::Yellow);                                                   ///
+    yellowBlock.setPosition(0, 1080.f - 200.f);                                                    ///
+    bool preBuilding = false;                                                                      ///
+    bool isBuilding = false;                                                                       ///
+    bool canBuildHere = true;                                                                      ///
+    sf::RectangleShape smallBlock(sf::Vector2f(blockSize - borderWidth, blockSize - borderWidth)); ///
+    smallBlock.setFillColor(sf::Color::Yellow);                                                    ///
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     std::vector<Infrastructure> infrastructures;
     // init the blocks
@@ -37,7 +39,9 @@ int main()
     Enemy testEnemy;
     testEnemy.row = 9;
     testEnemy.col = 20;
-    //
+
+    // vox selection
+    BoxSelection boxSelection;
 
     /////////////////////////////////////////////////////////////////
     ///////////////////////// update ////////////////////////////////
@@ -56,7 +60,9 @@ int main()
             {
                 window.close();
             }
+            boxSelection.handleEvent(event, gameMousePos);
 
+            // adjust the size of the view
             if (event.type == sf::Event::MouseWheelScrolled)
             {
                 if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
@@ -82,8 +88,22 @@ int main()
             movement.x += screenMoveSpeed;
         gameView.move(movement * deltaTime);
 
-        //activate/deactivate attack range preview
-        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left )
+        // update for boxselection
+        boxSelection.update(gameMousePos);
+
+        if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
+        {
+            auto selectedInfras = boxSelection.getSelected(infrastructures);
+
+            for (auto *infra : selectedInfras)
+            {
+                infra->rectRender.setOutlineColor(sf::Color::Red);
+                infra->rectRender.setOutlineThickness(3);
+            }
+        }
+
+        // activate/deactivate attack range preview
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left && !preBuilding)
         {
             bool clickedOnInfrastructure = false;
 
@@ -109,7 +129,7 @@ int main()
             }
         }
 
-        // deal with some ui
+        // deal with infrastructure preview ui
         if (yellowBlock.getGlobalBounds().contains(mousePos))
         {
             yellowBlock.setFillColor(sf::Color(200, 200, 0));
@@ -153,8 +173,6 @@ int main()
             isBuilding = true;
         }
 
-
-
         // update ends here
         // start render
         window.clear(sf::Color::White);
@@ -170,7 +188,9 @@ int main()
         }
 
         if (preBuilding)
+        {
             window.draw(smallBlock);
+        }
 
         for (const auto &infrastructure : infrastructures)
         {
@@ -178,6 +198,8 @@ int main()
             window.draw(infrastructure.rectRender);
             drawAttackRange(window, infrastructure);
         }
+
+        boxSelection.draw(window);
 
         // render things that won't move
         window.setView(uiView);

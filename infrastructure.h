@@ -60,6 +60,8 @@ void setInfrastructure(InfrastructureName target, int rowPos, int colPos, std::v
         aTower.rectRender.setFillColor(sf::Color::Yellow);
 
         infrastructures.push_back(aTower);
+
+        blocks[rowPos][colPos].occupy = Building;
     }
 }
 
