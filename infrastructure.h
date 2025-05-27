@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 #include "grid.h"
+#include "bullet.h"
 
 using namespace std;
 
@@ -25,7 +26,13 @@ public:
     int sizeC;
     sf::RectangleShape rectRender;
     int attackRange;
-    bool activateAttackRangeView;
+    bool activateAttackRangeView = false;
+    bool enemyInRange = false;
+    vector<Bullet> bullets;
+    float attackInterval;
+    float timeAfterAttack = 0.0f;
+    virtual void attackAt(Enemy target) {};
+    virtual void update(Enemy testEnemy) {};
 };
 
 class ArrowTower : public Infrastructure
@@ -41,23 +48,41 @@ public:
         sizeC = 1;
         name = "arrow tower";
         health = 100;
-        activateAttackRangeView = false;
+        attackInterval = 0.5f;
+    }
+    void attackAt(Enemy target)
+    {
+    }
+    void update(Enemy testEnemy)
+    {
+        int dist = abs(posR - testEnemy.row) + abs(posC - testEnemy.col);
+        if (dist <= attackRange)
+        {
+            enemyInRange = true;
+            rectRender.setFillColor(sf::Color::Red);
+            attackAt(testEnemy);
+        }
+        else
+        {
+            enemyInRange = false;
+            rectRender.setFillColor(sf::Color::Yellow);
+            bullets.clear();
+        }
     }
 };
 
 // put the infrastructure down
-void setInfrastructure(InfrastructureName target, int rowPos, int colPos, std::vector<std::vector<Block>> &blocks, std::vector<Infrastructure> &infrastructures)
+void setInfrastructure(InfrastructureName target, int rowPos, int colPos, std::vector<std::vector<Block>> &blocks, std::vector<Infrastructure*> &infrastructures)
 {
     if (target == ArrowTowerType)
     {
-        ArrowTower aTower(rowPos, colPos);
+        ArrowTower* aTower = new ArrowTower(rowPos, colPos);
 
-        aTower.rectRender.setSize(sf::Vector2f(blockSize, blockSize));
-        aTower.rectRender.setFillColor(sf::Color::White);
+        aTower->rectRender.setSize(sf::Vector2f(blockSize, blockSize));
         float x = colPos * blockSize;
         float y = rowPos * blockSize;
-        aTower.rectRender.setPosition(x, y);
-        aTower.rectRender.setFillColor(sf::Color::Yellow);
+        aTower->rectRender.setPosition(x, y);
+        aTower->rectRender.setFillColor(sf::Color::Yellow);
 
         infrastructures.push_back(aTower);
 

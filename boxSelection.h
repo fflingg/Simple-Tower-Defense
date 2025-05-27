@@ -1,7 +1,6 @@
 #ifndef BOXSELECTION__H
 #define BOXSELECTION__H
 
-
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include "infrastructure.h"
@@ -9,16 +8,16 @@
 class BoxSelection
 {
 public:
-    std::vector<Infrastructure*> selectedInfrastructures;
+    std::vector<Infrastructure *> selectedInfrastructures;
     BoxSelection()
     {
         isDragging = false;
-        selectionRect.setFillColor(sf::Color(0, 0, 255, 50)); 
+        selectionRect.setFillColor(sf::Color(0, 0, 255, 50));
         selectionRect.setOutlineColor(sf::Color::Blue);
         selectionRect.setOutlineThickness(1);
     }
 
-    void handleEvent(const sf::Event& event, const sf::Vector2f& mousePos)
+    void handleEvent(const sf::Event &event, const sf::Vector2f &mousePos)
     {
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
         {
@@ -33,7 +32,7 @@ public:
         }
     }
 
-    void update(const sf::Vector2f& mousePos)
+    void update(const sf::Vector2f &mousePos)
     {
         if (isDragging)
         {
@@ -44,7 +43,7 @@ public:
         }
     }
 
-    void draw(sf::RenderWindow& window)
+    void draw(sf::RenderWindow &window)
     {
         if (isDragging)
         {
@@ -52,17 +51,16 @@ public:
         }
     }
 
-    void getSelected(const std::vector<Infrastructure>& infrastructures)
+    void getSelected(std::vector<Infrastructure*> &infrastructures)
     {
         selectedInfrastructures.clear();
-        for (auto& infra : infrastructures)
+        for (auto &infra : infrastructures)
         {
-            if (selectionBounds.intersects(infra.rectRender.getGlobalBounds()))
+            if (selectionBounds.intersects(infra->rectRender.getGlobalBounds()))
             {
-                selectedInfrastructures.push_back(const_cast<Infrastructure*>(&infra)); 
+                selectedInfrastructures.push_back(infra);
             }
         }
-
     }
 
     void clearSelection()
@@ -83,8 +81,7 @@ private:
             std::min(dragStartPos.x, dragCurrentPos.x),
             std::min(dragStartPos.y, dragCurrentPos.y),
             std::abs(dragCurrentPos.x - dragStartPos.x),
-            std::abs(dragCurrentPos.y - dragStartPos.y)
-        );
+            std::abs(dragCurrentPos.y - dragStartPos.y));
     }
 };
 

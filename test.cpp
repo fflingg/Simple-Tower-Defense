@@ -1,7 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include "grid.h"
-#include "enemy.h"
 #include "infrastructure.h"
 #include "boxSelection.h"
 
@@ -27,7 +26,7 @@ int main()
     smallBlock.setFillColor(sf::Color::Yellow);                                                    ///
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    std::vector<Infrastructure> infrastructures;
+    std::vector<Infrastructure*> infrastructures;
     // init the blocks
     std::vector<std::vector<Block>> blocks;
     initGrid(blocks, gridRow, gridColumn, blockSize);
@@ -36,13 +35,19 @@ int main()
     sf::Clock clock;
 
     // test an enemy here
+
+
+    std::vector<Enemy> enemies;
     Enemy testEnemy;
-    testEnemy.row = 9;
-    testEnemy.col = 20;
+    testEnemy.row = 8;
+    testEnemy.col = 19;
+    testEnemy.renderer.setRadius(blockSize * 0.4f);
+    testEnemy.renderer.setFillColor(sf::Color::Red);
+    testEnemy.renderer.setOrigin(testEnemy.renderer.getRadius(), testEnemy.renderer.getRadius());
+    enemies.push_back(testEnemy);
 
-    // vox selection
+    // box selection
     BoxSelection boxSelection;
-
 
     /////////////////////////////////////////////////////////////////
     ///////////////////////// update ////////////////////////////////
@@ -91,11 +96,10 @@ int main()
 
         // update for boxselection
         boxSelection.update(gameMousePos);
-
         if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
         {
             boxSelection.getSelected(infrastructures);
-            
+
             for (auto *infra : boxSelection.selectedInfrastructures)
             {
                 infra->activateAttackRangeView = true;
@@ -109,14 +113,14 @@ int main()
 
             for (auto &infra : infrastructures)
             {
-                if (infra.rectRender.getGlobalBounds().contains(gameMousePos))
+                if (infra->rectRender.getGlobalBounds().contains(gameMousePos))
                 {
-                    infra.activateAttackRangeView = true;
+                    infra->activateAttackRangeView = true;
                     clickedOnInfrastructure = true;
                 }
                 else
                 {
-                    infra.activateAttackRangeView = false;
+                    infra->activateAttackRangeView = false;
                 }
             }
 
@@ -124,7 +128,7 @@ int main()
             {
                 for (auto &infra : infrastructures)
                 {
-                    infra.activateAttackRangeView = false;
+                    infra->activateAttackRangeView = false;
                 }
             }
         }
@@ -173,6 +177,12 @@ int main()
             isBuilding = true;
         }
 
+        // update for tower attack
+        for (auto &infra : infrastructures)
+        {
+            infra->update(testEnemy);
+        }
+
         // update ends here
         // start render
         window.clear(sf::Color::White);
@@ -192,13 +202,19 @@ int main()
             window.draw(smallBlock);
         }
 
+        // draw the enemy
+        sf::Vector2f enemyPos(testEnemy.col * blockSize + blockSize / 2.f, testEnemy.row * blockSize + blockSize / 2.f);
+        testEnemy.renderer.setPosition(enemyPos);
+        window.draw(testEnemy.renderer);
+
+        // draw infrastructures
         for (const auto &infrastructure : infrastructures)
         {
-
-            window.draw(infrastructure.rectRender);
-            drawAttackRange(window, infrastructure);
+            window.draw(infrastructure->rectRender);
+            drawAttackRange(window, *infrastructure);
         }
 
+        // draw selection box
         boxSelection.draw(window);
 
         // render things that won't move
