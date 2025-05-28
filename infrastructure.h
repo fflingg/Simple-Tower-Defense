@@ -28,9 +28,9 @@ public:
     int attackRange;
     bool activateAttackRangeView = false;
     bool enemyInRange = false;
-    vector<Bullet> bullets;
+    vector<Bullet *> bullets;
     float attackInterval;
-    float timeAfterAttack = 0.0f;
+    sf::Clock attackClock;
     virtual void attackAt(Enemy target) {};
     virtual void update(Enemy testEnemy) {};
 };
@@ -52,15 +52,28 @@ public:
     }
     void attackAt(Enemy target)
     {
+        if (!target.alive)
+        {
+            for (Bullet *bullet : bullets)
+            {
+                delete bullet;
+            }
+            bullets.clear();
+        }
+        else
+        {
+        }
     }
     void update(Enemy testEnemy)
     {
+        float elapsed = attackClock.getElapsedTime().asSeconds();
         int dist = abs(posR - testEnemy.row) + abs(posC - testEnemy.col);
-        if (dist <= attackRange)
+        if (dist <= attackRange && elapsed >= attackInterval)
         {
             enemyInRange = true;
             rectRender.setFillColor(sf::Color::Red);
             attackAt(testEnemy);
+            attackClock.restart();
         }
         else
         {
@@ -72,11 +85,11 @@ public:
 };
 
 // put the infrastructure down
-void setInfrastructure(InfrastructureName target, int rowPos, int colPos, std::vector<std::vector<Block>> &blocks, std::vector<Infrastructure*> &infrastructures)
+void setInfrastructure(InfrastructureName target, int rowPos, int colPos, std::vector<std::vector<Block>> &blocks, std::vector<Infrastructure *> &infrastructures)
 {
     if (target == ArrowTowerType)
     {
-        ArrowTower* aTower = new ArrowTower(rowPos, colPos);
+        ArrowTower *aTower = new ArrowTower(rowPos, colPos);
 
         aTower->rectRender.setSize(sf::Vector2f(blockSize, blockSize));
         float x = colPos * blockSize;
