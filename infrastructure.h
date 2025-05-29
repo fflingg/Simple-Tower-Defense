@@ -31,8 +31,8 @@ public:
     vector<Bullet *> bullets;
     float attackInterval;
     sf::Clock attackClock;
-    virtual void attackAt(Enemy target) {};
-    virtual void update(Enemy testEnemy) {};
+    virtual void attackAt(Enemy *target) {};
+    virtual void update(std::vector<Enemy *> enemies) {};
 };
 
 class ArrowTower : public Infrastructure
@@ -50,9 +50,9 @@ public:
         health = 100;
         attackInterval = 0.5f;
     }
-    void attackAt(Enemy target)
+    void attackAt(Enemy *target)
     {
-        if (!target.alive)
+        if (!target->alive)
         {
             for (Bullet *bullet : bullets)
             {
@@ -64,18 +64,26 @@ public:
         {
         }
     }
-    void update(Enemy testEnemy)
+    void update(std::vector<Enemy *> enemies)
     {
         float elapsed = attackClock.getElapsedTime().asSeconds();
-        int dist = abs(posR - testEnemy.row) + abs(posC - testEnemy.col);
-        if (dist <= attackRange && elapsed >= attackInterval)
+        bool foundEnemyInRange = false;
+
+        for (Enemy *enemy : enemies)
         {
-            enemyInRange = true;
-            rectRender.setFillColor(sf::Color::Red);
-            attackAt(testEnemy);
-            attackClock.restart();
+            int dist = abs(posR - enemy->row) + abs(posC - enemy->col);
+            if (dist <= attackRange && elapsed >= attackInterval)
+            {
+                enemyInRange = true;
+                rectRender.setFillColor(sf::Color::Red);
+                attackAt(enemy);
+                attackClock.restart();
+                foundEnemyInRange = true;
+                break;
+            }
         }
-        else
+
+        if (!foundEnemyInRange)
         {
             enemyInRange = false;
             rectRender.setFillColor(sf::Color::Yellow);

@@ -13,6 +13,7 @@ public:
     int col;
     sf::CircleShape renderer;
     bool alive;
+    sf::Vector2f pos;
 };
 
 class Bullet

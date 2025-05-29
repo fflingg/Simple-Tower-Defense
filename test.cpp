@@ -26,7 +26,7 @@ int main()
     smallBlock.setFillColor(sf::Color::Yellow);                                                    ///
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    std::vector<Infrastructure*> infrastructures;
+    std::vector<Infrastructure *> infrastructures;
     // init the blocks
     std::vector<std::vector<Block>> blocks;
     initGrid(blocks, gridRow, gridColumn, blockSize);
@@ -36,14 +36,15 @@ int main()
 
     // test an enemy here
 
+    std::vector<Enemy *> enemies;
+    Enemy *testEnemy = new Enemy;
+    testEnemy->row = 8;
+    testEnemy->col = 19;
+    testEnemy->renderer.setRadius(blockSize * 0.4f);
+    testEnemy->renderer.setFillColor(sf::Color::Red);
+    testEnemy->renderer.setOrigin(testEnemy->renderer.getRadius(), testEnemy->renderer.getRadius());
 
-    std::vector<Enemy> enemies;
-    Enemy testEnemy;
-    testEnemy.row = 8;
-    testEnemy.col = 19;
-    testEnemy.renderer.setRadius(blockSize * 0.4f);
-    testEnemy.renderer.setFillColor(sf::Color::Red);
-    testEnemy.renderer.setOrigin(testEnemy.renderer.getRadius(), testEnemy.renderer.getRadius());
+    testEnemy->pos = {testEnemy->col * blockSize + blockSize / 2.f, testEnemy->row * blockSize + blockSize / 2.f};
     enemies.push_back(testEnemy);
 
     // box selection
@@ -180,7 +181,7 @@ int main()
         // update for tower attack
         for (auto &infra : infrastructures)
         {
-            infra->update(testEnemy);
+            infra->update(enemies);
         }
 
         // update ends here
@@ -203,9 +204,9 @@ int main()
         }
 
         // draw the enemy
-        sf::Vector2f enemyPos(testEnemy.col * blockSize + blockSize / 2.f, testEnemy.row * blockSize + blockSize / 2.f);
-        testEnemy.renderer.setPosition(enemyPos);
-        window.draw(testEnemy.renderer);
+
+        testEnemy->renderer.setPosition(testEnemy->pos);
+        window.draw(testEnemy->renderer);
 
         // draw infrastructures
         for (const auto &infrastructure : infrastructures)
