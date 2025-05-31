@@ -1,27 +1,33 @@
 #ifndef ENEMY__H
 #define ENEMY__H
 
-#include <vector>
-#include <utility>
 #include <string>
+#include <vector>
 
-class Enemy{
-    public: 
-        int health;
-        std::string name;
-        int row;
-        int col;
+class Enemy {
+   public:
+    int health;
+    std::string name;
+    int row;
+    int col;
 };
 
-//implement the calculation
-void calculateFlowGrid (std::vector<std::vector<std::pair<int, int>>> &flowGrid,std::vector<std::vector<int>> map){
+// return a flow grid based on given map
+// pair indicates the direction of enemy should move on path
+// (0, 0) for off path
+std::vector<std::vector<std::pair<int, int>>> calculateFlowGrid(
+    std::vector<std::vector<int>> map);
 
-}
+void updateEnemyPos(Enemy &enemy,
+                    std::vector<std::vector<std::pair<int, int>>> &flowGrid);
 
-void updateEnemyPos(Enemy &enemy, std::vector<std::vector<std::pair<int, int>>> &flowGrid){
-    std::pair<int, int> direction = flowGrid[enemy.row-1][enemy.col-1];
-    enemy.row += direction.first;
-    enemy.col += direction.second;
-}
+// print the flow grid
+// < left
+// > right
+// ^ up
+// v down
+// . off path
+void printFlowGrid(
+    const std::vector<std::vector<std::pair<int, int>>> &flowGrid);
 
-#endif
+#endif  // ENEMY__H

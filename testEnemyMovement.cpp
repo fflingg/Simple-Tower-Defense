@@ -1,7 +1,8 @@
-#include <vector>
-#include <utility>
-#include "enemy.h"
 #include <iostream>
+#include <utility>
+#include <vector>
+
+#include "enemy.h"
 
 using namespace std;
 
@@ -31,29 +32,19 @@ const vector<vector<int>> map = {
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 };
 
-//initial flowGrid filled by (0,0)
-vector<vector<pair<int, int>>> flowGrid(gridRow, vector<pair<int, int>>(gridColumn, {0, -1}));
+// initial flowGrid filled by (0,0)
+vector<vector<pair<int, int>>> flowGrid=calculateFlowGrid(map);
 
-void viewGrid(vector<vector<int>> map, Enemy enemy)
-{
-    for (int i = 0; i < gridRow; ++i)
-    {
-        for (int j = 0; j < gridColumn; ++j)
-        {
-            if (i == enemy.row - 1 && j == enemy.col - 1)
-            {
+void viewMap(vector<vector<int>> map, Enemy enemy) {
+    for (int i = 0; i < gridRow; ++i) {
+        for (int j = 0; j < gridColumn; ++j) {
+            if (i == enemy.row - 1 && j == enemy.col - 1) {
                 cout << "e ";
-            }
-            else if (map[i][j] == 0)
-            {
+            } else if (map[i][j] == 0) {
                 cout << "- ";
-            }
-            else if (map[i][j] == 1)
-            {
+            } else if (map[i][j] == 1) {
                 cout << "# ";
-            }
-            else if (map[i][j] == 2)
-            {
+            } else if (map[i][j] == 2) {
                 cout << "  ";
             }
         }
@@ -61,13 +52,15 @@ void viewGrid(vector<vector<int>> map, Enemy enemy)
     }
 }
 
-int main()
-{
+int main() {
     Enemy testEnemy;
     testEnemy.row = 9;   // row
-    testEnemy.col = 20; // column
-    calculateFlowGrid(flowGrid,map);
-    viewGrid(map, testEnemy);
-    updateEnemyPos(testEnemy,flowGrid);
-    viewGrid(map, testEnemy);
+    testEnemy.col = 20;  // column
+    viewMap(map, testEnemy);
+    for (int i = 0; i < 20; ++i) {
+        updateEnemyPos(testEnemy, flowGrid);
+        viewMap(map, testEnemy);
+    }
+    printFlowGrid(flowGrid);
+    return 0;
 }
