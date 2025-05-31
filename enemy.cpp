@@ -66,10 +66,9 @@ static std::pair<int, int> calFlow(std::vector<std::vector<int>> map, int row,
     }
 }
 
-std::vector<std::vector<std::pair<int, int>>> calculateFlowGrid(
-    std::vector<std::vector<int>> map) {
-    std::vector<std::vector<std::pair<int, int>>> flowGrid(
-        map.size(), std::vector<std::pair<int, int>>(map[0].size(), {0, 0}));
+VecField calculateFlowGrid(std::vector<std::vector<int>> map) {
+    VecField flowGrid(map.size(),
+                      std::vector<std::pair<int, int>>(map[0].size(), {0, 0}));
     for (int r = 0; r < map.size(); r++) {
         for (int c = 0; c < map[r].size(); c++) {
             if (map[r][c] == 2) {
@@ -80,15 +79,13 @@ std::vector<std::vector<std::pair<int, int>>> calculateFlowGrid(
     return flowGrid;
 }
 
-void updateEnemyPos(Enemy &enemy,
-                    std::vector<std::vector<std::pair<int, int>>> &flowGrid) {
+void updateEnemyPos(Enemy &enemy, VecField &flowGrid) {
     std::pair<int, int> direction = flowGrid[enemy.row - 1][enemy.col - 1];
     enemy.row += direction.first;
     enemy.col += direction.second;
 }
 
-void printFlowGrid(
-    const std::vector<std::vector<std::pair<int, int>>> &flowGrid) {
+void printFlowGrid(const VecField &flowGrid) {
     std::cout << "Flow Grid:\n";
     for (int i = 0; i < flowGrid.size(); i++) {
         for (int j = 0; j < flowGrid[0].size(); j++) {
