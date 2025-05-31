@@ -1,5 +1,4 @@
 #include <iostream>
-#include <utility>
 #include <vector>
 
 #include "enemy.h"
@@ -8,32 +7,6 @@ using namespace std;
 
 const int gridRow = 20;
 const int gridColumn = 20;
-
-const vector<vector<int>> map = {
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 2, 2, 2, 2, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-};
-
-// initial flowGrid filled by (0,0)
-vector<vector<pair<int, int>>> flowGrid=calculateFlowGrid(map);
 
 void viewMap(vector<vector<int>> map, Enemy enemy) {
     for (int i = 0; i < gridRow; ++i) {
@@ -52,15 +25,18 @@ void viewMap(vector<vector<int>> map, Enemy enemy) {
     }
 }
 
+extern const IntField gridMap;
+
 int main() {
-    Enemy testEnemy;
-    testEnemy.row = 9;   // row
-    testEnemy.col = 20;  // column
-    viewMap(map, testEnemy);
+    Enemy fool(9, 20, 0, "");
+
+    viewMap(gridMap, fool);
     for (int i = 0; i < 20; ++i) {
-        updateEnemyPos(testEnemy, flowGrid);
-        viewMap(map, testEnemy);
+        std::cout << "\nAfter move " << i << ":\n";
+        fool.move();
+        viewMap(gridMap, fool);
     }
-    printFlowGrid(flowGrid);
+
+    fool.printFlowGrid();
     return 0;
 }

@@ -21,7 +21,7 @@ static std::vector<std::pair<int, int>> probe(int length, int width, int row,
     return directions;
 }
 
-static int calDist(std::vector<std::vector<int>> map, int row, int col) {
+static int calDist(IntField map, int row, int col) {
     if (map[row][col] == 1) {
         return 0;  // already reached target
     } else if (map[row][col] == 0) {
@@ -45,8 +45,7 @@ static int calDist(std::vector<std::vector<int>> map, int row, int col) {
     return dist + 1;
 }
 
-static std::pair<int, int> calFlow(std::vector<std::vector<int>> map, int row,
-                                   int col) {
+static std::pair<int, int> calFlow(IntField map, int row, int col) {
     std::vector<std::pair<int, int>> directions =
         probe(map.size(), map[row].size(), row, col);
     std::vector<int> distances;
@@ -66,7 +65,7 @@ static std::pair<int, int> calFlow(std::vector<std::vector<int>> map, int row,
     }
 }
 
-VecField calculateFlowGrid(std::vector<std::vector<int>> map) {
+VecField calculateFlowGrid(IntField map) {
     VecField flowGrid(map.size(),
                       std::vector<std::pair<int, int>>(map[0].size(), {0, 0}));
     for (int r = 0; r < map.size(); r++) {
@@ -79,13 +78,40 @@ VecField calculateFlowGrid(std::vector<std::vector<int>> map) {
     return flowGrid;
 }
 
-void updateEnemyPos(Enemy &enemy, VecField &flowGrid) {
-    std::pair<int, int> direction = flowGrid[enemy.row - 1][enemy.col - 1];
-    enemy.row += direction.first;
-    enemy.col += direction.second;
+void Enemy::move() {
+    std::pair<int, int> direction = flowGrid[row - 1][col - 1];
+    row += direction.first;
+    col += direction.second;
 }
 
-void printFlowGrid(const VecField &flowGrid) {
+// or just include "grid.h" and use
+// extern const IntField gridMap;
+extern const IntField gridMap = {
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 2, 2, 2, 2, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+};
+
+const VecField Enemy::flowGrid = calculateFlowGrid(gridMap);
+
+void Enemy::printFlowGrid() const {
     std::cout << "Flow Grid:\n";
     for (int i = 0; i < flowGrid.size(); i++) {
         for (int j = 0; j < flowGrid[0].size(); j++) {
@@ -106,3 +132,7 @@ void printFlowGrid(const VecField &flowGrid) {
         std::cout << std::endl;
     }
 }
+
+
+Enemy::Enemy(int row, int col, int health, std::string name)
+    : row(row), col(col), health(health), name(name) {}
