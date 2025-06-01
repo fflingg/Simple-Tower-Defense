@@ -22,17 +22,11 @@ class Enemy {
     int col;
 };
 
-// return a flow grid based on given map
-// pair indicates the direction of enemy should move on path
-// (0, 0) for off path
-VecField calculateFlowGrid(IntField map);
-
-// print the flow grid
-// < left
-// > right
-// ^ up
-// v down
-// . off path
-void printFlowGrid(const VecField &flowGrid);
+/* return a flow grid based on given map
+ * pair indicates the direction of enemy should move on path
+ * (0, 0) for off path
+ */
+// uncomment the declaration if you want to use it elsewhere
+// VecField calFlowGrid(IntField map);
 
 #endif  // ENEMY__H

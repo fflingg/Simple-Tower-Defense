@@ -65,7 +65,7 @@ static std::pair<int, int> calFlow(IntField map, int row, int col) {
     }
 }
 
-VecField calculateFlowGrid(IntField map) {
+VecField calFlowGrid(IntField map) {
     VecField flowGrid(map.size(),
                       std::vector<std::pair<int, int>>(map[0].size(), {0, 0}));
     for (int r = 0; r < map.size(); r++) {
@@ -109,7 +109,7 @@ extern const IntField gridMap = {
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 };
 
-const VecField Enemy::flowGrid = calculateFlowGrid(gridMap);
+const VecField Enemy::flowGrid = calFlowGrid(gridMap);
 
 void Enemy::printFlowGrid() const {
     std::cout << "Flow Grid:\n";
