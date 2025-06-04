@@ -4,17 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include "grid.h"
 
-class Enemy
-{
-public:
-    int health;
-    std::string name;
-    int row;
-    int col;
-    sf::CircleShape renderer;
-    bool alive;
-    sf::Vector2f pos;
-};
+
 
 class Bullet
 {

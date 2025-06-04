@@ -5,6 +5,7 @@
 #include <string>
 #include "grid.h"
 #include "bullet.h"
+#include "enemy.h"
 
 using namespace std;
 

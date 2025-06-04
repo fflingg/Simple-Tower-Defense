@@ -3,6 +3,7 @@
 #include "grid.h"
 #include "infrastructure.h"
 #include "boxSelection.h"
+#include "enemy.h"
 
 const int parallelResolution = 1920;
 const int verticalResolution = 1080;
@@ -182,6 +183,11 @@ int main()
         for (auto &infra : infrastructures)
         {
             infra->update(enemies);
+        }
+
+        for (auto &enemy : enemies)
+        {
+            enemy->update();
         }
 
         // update ends here
