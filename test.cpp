@@ -39,6 +39,7 @@ int main()
 
     std::vector<Enemy *> enemies;
     Enemy *testEnemy = new Enemy;
+    testEnemy->health = 100;
     testEnemy->alive = true;
     testEnemy->row = 8;
     testEnemy->col = 19;
@@ -184,6 +185,7 @@ int main()
         for (auto &infra : infrastructures)
         {
             infra->update(enemies);
+            
         }
 
         for (auto &enemy : enemies)
@@ -191,6 +193,11 @@ int main()
             enemy->update();
         }
 
+        for (auto &infra : infrastructures)
+        {
+            infra->lateUpdate(enemies);
+            
+        }
         enemyLateUpdate(enemies);
 
         // update ends here

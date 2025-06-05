@@ -5,6 +5,7 @@
 #include "grid.h"
 #include <cmath>
 #include "enemy.h"
+#include <iostream>
 
 class Bullet
 {
@@ -13,26 +14,37 @@ public:
     sf::CircleShape renderer;
     sf::Vector2f pos;
     Enemy *target;
+    bool active;
 
-    Bullet(int damage, Enemy *enemy, sf::Vector2f position)
+    Bullet(int givenDamage, Enemy *enemy, sf::Vector2f position)
     {
         renderer.setRadius(blockSize * 0.2f);
         renderer.setFillColor(sf::Color::Black);
         renderer.setOrigin(renderer.getRadius(), renderer.getRadius());
         target = enemy;
         pos = position;
+        active = true;
+        damage = givenDamage;
     }
 
     void update()
     {
-        sf::Vector2f direction = target->pos - pos;
-        float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-        if (length != 0)
+        if (active)
         {
-            direction /= length;
-            float speed = 5.0f;
-            pos += direction * speed;
-            renderer.setPosition(pos);
+            sf::Vector2f direction = target->pos - pos;
+            float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+            if (length >= 5.0f)
+            {
+                direction /= length;
+                float speed = 5.0f;
+                pos += direction * speed;
+                renderer.setPosition(pos);
+            }
+            else
+            {
+                target->health -= damage;
+                active = false;
+            }
         }
     }
 };

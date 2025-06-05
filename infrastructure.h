@@ -35,7 +35,7 @@ public:
     sf::Clock attackClock;
     virtual void attackAt(Enemy *target) {};
     virtual void update(std::vector<Enemy *> enemies) {};
-    virtual void lateUpdate(std::vector<Enemy *> enemies){};//delete bullets aiming at dead enemies
+    virtual void lateUpdate(std::vector<Enemy *> enemies) {}; // delete bullets aiming at dead enemies
 };
 
 class ArrowTower : public Infrastructure
@@ -52,7 +52,7 @@ public:
         pos = {posC * blockSize + blockSize / 2.f, posR * blockSize + blockSize / 2.f};
         name = "arrow tower";
         health = 100;
-        attackInterval = 0.5f;
+        attackInterval = 1.0f;
     }
 
     void attackAt(Enemy *target)
@@ -67,7 +67,7 @@ public:
         }
         else
         {
-            Bullet* newBullet = new Bullet(10,target,pos);
+            Bullet *newBullet = new Bullet(10, target, pos);
             bullets.push_back(newBullet);
         }
     }
@@ -100,6 +100,28 @@ public:
         for (auto &bullet : bullets)
         {
             bullet->update();
+        }
+    }
+
+    void lateUpdate(std::vector<Enemy *> enemies)
+    {
+        for (auto &bullet : bullets)
+        {
+            if(!bullet->target->alive){
+                bullet->active = false;
+            }
+        }
+        for (auto it = bullets.begin(); it != bullets.end();)
+        {
+            if (!(*it)->active)
+            {
+                delete *it;
+                it = bullets.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
         }
     }
 };
