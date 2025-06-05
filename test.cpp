@@ -39,6 +39,7 @@ int main()
 
     std::vector<Enemy *> enemies;
     Enemy *testEnemy = new Enemy;
+    testEnemy->alive = true;
     testEnemy->row = 8;
     testEnemy->col = 19;
     testEnemy->renderer.setRadius(blockSize * 0.4f);
@@ -190,6 +191,8 @@ int main()
             enemy->update();
         }
 
+        enemyLateUpdate(enemies);
+
         // update ends here
         // start render
         window.clear(sf::Color::White);
@@ -211,14 +214,19 @@ int main()
 
         // draw the enemy
 
-        testEnemy->renderer.setPosition(testEnemy->pos);
-        window.draw(testEnemy->renderer);
+        for (auto &enemy : enemies)
+        {
+            window.draw(enemy->renderer);
+        }
 
         // draw infrastructures
         for (const auto &infrastructure : infrastructures)
         {
             window.draw(infrastructure->rectRender);
             drawAttackRange(window, *infrastructure);
+            for(auto &bullet : infrastructure->bullets){
+                window.draw(bullet->renderer);
+            }
         }
 
         // draw selection box

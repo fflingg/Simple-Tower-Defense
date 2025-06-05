@@ -25,6 +25,7 @@ public:
     int posC;
     int sizeR;
     int sizeC;
+    sf::Vector2f pos;
     sf::RectangleShape rectRender;
     int attackRange;
     bool activateAttackRangeView = false;
@@ -34,6 +35,7 @@ public:
     sf::Clock attackClock;
     virtual void attackAt(Enemy *target) {};
     virtual void update(std::vector<Enemy *> enemies) {};
+    virtual void lateUpdate(std::vector<Enemy *> enemies){};//delete bullets aiming at dead enemies
 };
 
 class ArrowTower : public Infrastructure
@@ -47,10 +49,12 @@ public:
         attackRange = 5;
         sizeR = 1;
         sizeC = 1;
+        pos = {posC * blockSize + blockSize / 2.f, posR * blockSize + blockSize / 2.f};
         name = "arrow tower";
         health = 100;
         attackInterval = 0.5f;
     }
+
     void attackAt(Enemy *target)
     {
         if (!target->alive)
@@ -63,8 +67,11 @@ public:
         }
         else
         {
+            Bullet* newBullet = new Bullet(10,target,pos);
+            bullets.push_back(newBullet);
         }
     }
+
     void update(std::vector<Enemy *> enemies)
     {
         float elapsed = attackClock.getElapsedTime().asSeconds();
@@ -88,7 +95,11 @@ public:
         {
             enemyInRange = false;
             rectRender.setFillColor(sf::Color::Yellow);
-            bullets.clear();
+        }
+
+        for (auto &bullet : bullets)
+        {
+            bullet->update();
         }
     }
 };

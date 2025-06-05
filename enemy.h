@@ -22,6 +22,7 @@ public:
     void move();
     void printFlowGrid() const;
     void update();
+    void lateUpdate(); 
 
     int health;
     std::string name;
@@ -135,12 +136,12 @@ VecField calFlowGrid(IntField map)
 
 void Enemy::move()
 {
-    std::cout << row << " " << col << std::endl;
+
     std::pair<int, int> direction = flowGrid[row][col];
     row += direction.first;
     col += direction.second;
-    this->pos = {this->col * blockSize + blockSize / 2.f, this->row * blockSize + blockSize / 2.f};
-    std::cout << row << " " << col << std::endl;
+    pos = {this->col * blockSize + blockSize / 2.f, this->row * blockSize + blockSize / 2.f};
+    
 }
 
 void Enemy::printFlowGrid() const
@@ -185,6 +186,21 @@ void Enemy::update()
     {
         this->move();
         moveClock.restart();
+    }
+    renderer.setPosition(pos);
+    if(health <= 0 ){
+        alive = false;
+    }
+}
+
+void enemyLateUpdate(std::vector<Enemy *> &enemies) {
+    for (auto it = enemies.begin(); it != enemies.end(); ) {
+        if (!(*it)->alive) {
+            delete *it;      
+            it = enemies.erase(it);  
+        } else {
+            ++it;           
+        }
     }
 }
 
