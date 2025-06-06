@@ -158,7 +158,7 @@ void drawAttackRange(sf::RenderWindow &window, const Infrastructure &infra)
                 {
                     sf::RectangleShape block;
                     block.setSize(sf::Vector2f(blockSize, blockSize));
-                    block.setPosition({c * blockSize, r * blockSize});
+                    block.setPosition({(float)c * blockSize, (float)r * blockSize});
                     block.setFillColor(sf::Color(255, 255, 0, 50));
                     block.setOutlineColor(sf::Color::Yellow);
                     block.setOutlineThickness(1);

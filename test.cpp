@@ -11,7 +11,7 @@ const float screenMoveSpeed = 1000.f;
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(parallelResolution, verticalResolution), "test");
+    sf::RenderWindow window(sf::VideoMode({parallelResolution, verticalResolution}), "test");
     window.setFramerateLimit(60);
     sf::View uiView = window.getDefaultView();
     sf::View gameView = window.getView();
@@ -19,7 +19,7 @@ int main()
     // UI for prebuilding/////////////////////////////////////////////////////////////////////////////////////
     sf::RectangleShape yellowBlock(sf::Vector2f(150.f, 150.f));                                    ///
     yellowBlock.setFillColor(sf::Color::Yellow);                                                   ///
-    yellowBlock.setPosition(0, 1080.f - 200.f);                                                    ///
+    yellowBlock.setPosition({0, 1080.f - 200.f});                                                    ///
     bool preBuilding = false;                                                                      ///
     bool isBuilding = false;                                                                       ///
     bool canBuildHere = true;                                                                      ///
@@ -36,7 +36,6 @@ int main()
     sf::Clock clock;
 
     // test an enemy here
-
     std::vector<Enemy *> enemies;
     Enemy *testEnemy = new Enemy;
     testEnemy->health = 100;
@@ -45,8 +44,7 @@ int main()
     testEnemy->col = 19;
     testEnemy->renderer.setRadius(blockSize * 0.4f);
     testEnemy->renderer.setFillColor(sf::Color::Red);
-    testEnemy->renderer.setOrigin(testEnemy->renderer.getRadius(), testEnemy->renderer.getRadius());
-
+    testEnemy->renderer.setOrigin({testEnemy->renderer.getRadius(), testEnemy->renderer.getRadius()});
     testEnemy->pos = {testEnemy->col * blockSize + blockSize / 2.f, testEnemy->row * blockSize + blockSize / 2.f};
     enemies.push_back(testEnemy);
 
@@ -62,86 +60,97 @@ int main()
         float deltaTime = clock.restart().asSeconds();
         sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window), uiView);
         sf::Vector2f gameMousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window), gameView);
-        sf::Event event;
 
-        while (window.pollEvent(event))
+        // Event handling
+        while (const auto event = window.pollEvent())
         {
-            if (event.type == sf::Event::Closed)
+            if (event->is<sf::Event::Closed>())
             {
                 window.close();
             }
-            boxSelection.handleEvent(event, gameMousePos);
 
-            // adjust the size of the view
-            if (event.type == sf::Event::MouseWheelScrolled)
+            boxSelection.handleEvent(*event, gameMousePos);
+
+            // Mouse wheel event for zooming
+            if (const auto* wheelEvent = event->getIf<sf::Event::MouseWheelScrolled>())
             {
-                if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
+                if (wheelEvent->wheel == sf::Mouse::Wheel::Vertical)
                 {
-                    float delta = event.mouseWheelScroll.delta;
+                    float delta = wheelEvent->delta;
                     if (delta > 0)
                         gameView.zoom(0.9f);
                     else if (delta < 0)
                         gameView.zoom(1.1f);
                 }
             }
+
+            // Mouse button released for box selection
+            if (const auto* mouseButtonEvent = event->getIf<sf::Event::MouseButtonReleased>())
+            {
+                if (mouseButtonEvent->button == sf::Mouse::Button::Left)
+                {
+                    boxSelection.getSelected(infrastructures);
+                    for (auto* infra : boxSelection.selectedInfrastructures)
+                    {
+                        infra->activateAttackRangeView = true;
+                    }
+                }
+            }
+
+
+            
+            // Mouse button pressed for infrastructure selection
+            if (const auto* mouseButtonEvent = event->getIf<sf::Event::MouseButtonPressed>())
+            {
+                if (mouseButtonEvent->button == sf::Mouse::Button::Left && !preBuilding)
+                {
+                    bool clickedOnInfrastructure = false;
+                    for (auto& infra : infrastructures)
+                    {
+                        if (infra->rectRender.getGlobalBounds().contains(gameMousePos))
+                        {
+                            infra->activateAttackRangeView = true;
+                            clickedOnInfrastructure = true;
+                        }
+                        else
+                        {
+                            infra->activateAttackRangeView = false;
+                        }
+                    }
+
+                    if (!clickedOnInfrastructure)
+                    {
+                        for (auto& infra : infrastructures)
+                        {
+                            infra->activateAttackRangeView = false;
+                        }
+                    }
+                }
+
+
+            }
         }
 
         // move the camera by w,a,s,d
         sf::Vector2f movement(0.f, 0.f);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
             movement.y -= screenMoveSpeed;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
             movement.y += screenMoveSpeed;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
             movement.x -= screenMoveSpeed;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
             movement.x += screenMoveSpeed;
         gameView.move(movement * deltaTime);
 
         // update for boxselection
         boxSelection.update(gameMousePos);
-        if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
-        {
-            boxSelection.getSelected(infrastructures);
 
-            for (auto *infra : boxSelection.selectedInfrastructures)
-            {
-                infra->activateAttackRangeView = true;
-            }
-        }
-
-        // activate/deactivate attack range preview
-        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left && !preBuilding)
-        {
-            bool clickedOnInfrastructure = false;
-
-            for (auto &infra : infrastructures)
-            {
-                if (infra->rectRender.getGlobalBounds().contains(gameMousePos))
-                {
-                    infra->activateAttackRangeView = true;
-                    clickedOnInfrastructure = true;
-                }
-                else
-                {
-                    infra->activateAttackRangeView = false;
-                }
-            }
-
-            if (!clickedOnInfrastructure)
-            {
-                for (auto &infra : infrastructures)
-                {
-                    infra->activateAttackRangeView = false;
-                }
-            }
-        }
-
-        // deal with infrastructure preview ui
+        // UI block hover effect
         if (yellowBlock.getGlobalBounds().contains(mousePos))
         {
             yellowBlock.setFillColor(sf::Color(200, 200, 0));
-            if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
             {
                 preBuilding = true;
                 isBuilding = false;
@@ -160,19 +169,20 @@ int main()
             int row = static_cast<int>(gameMousePos.y) / blockSize;
             float snappedX = col * blockSize;
             float snappedY = row * blockSize;
-            smallBlock.setPosition(snappedX, snappedY);
+            smallBlock.setPosition({snappedX, snappedY});
 
             gridPrebuilding(blocks, gridRow, gridColumn, true);
             canBuildHere = JudgeCanBuildHere(blocks, row, col);
-            // build the infrastructure
-            if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left && isBuilding && canBuildHere)
+            
+            // Check for mouse events in pre-building mode
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && isBuilding && canBuildHere)
             {
                 setInfrastructure(ArrowTowerType, row, col, blocks, infrastructures);
                 preBuilding = isBuilding = false;
                 gridPrebuilding(blocks, gridRow, gridColumn, false);
             }
-            // cancel the pre-building
-            if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Right)
+            
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
             {
                 preBuilding = isBuilding = false;
                 gridPrebuilding(blocks, gridRow, gridColumn, false);
@@ -182,33 +192,30 @@ int main()
         }
 
         // update for tower attack
-        for (auto &infra : infrastructures)
+        for (auto& infra : infrastructures)
         {
             infra->update(enemies);
-            
         }
 
-        for (auto &enemy : enemies)
+        for (auto& enemy : enemies)
         {
             enemy->update();
         }
 
-        for (auto &infra : infrastructures)
+        for (auto& infra : infrastructures)
         {
             infra->lateUpdate(enemies);
-            
         }
         enemyLateUpdate(enemies);
 
-        // update ends here
-        // start render
+        // Rendering
         window.clear(sf::Color::White);
 
         // render things that will move
         window.setView(gameView);
-        for (const auto &row : blocks)
+        for (const auto& row : blocks)
         {
-            for (const auto &block : row)
+            for (const auto& block : row)
             {
                 window.draw(block.rectRender);
             }
@@ -220,14 +227,13 @@ int main()
         }
 
         // draw the enemy
-
-        for (auto &enemy : enemies)
+        for (auto& enemy : enemies)
         {
             window.draw(enemy->renderer);
         }
 
         // draw infrastructures
-        for (const auto &infrastructure : infrastructures)
+        for (const auto& infrastructure : infrastructures)
         {
             window.draw(infrastructure->rectRender);
             drawAttackRange(window, *infrastructure);
