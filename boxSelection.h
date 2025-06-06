@@ -19,16 +19,22 @@ public:
 
     void handleEvent(const sf::Event &event, const sf::Vector2f &mousePos)
     {
-        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+        if (auto mousePressed = event.getIf<sf::Event::MouseButtonPressed>())
         {
-            isDragging = true;
-            dragStartPos = mousePos;
-            dragCurrentPos = mousePos;
+            if (mousePressed->button == sf::Mouse::Button::Left)
+            {
+                isDragging = true;
+                dragStartPos = mousePos;
+                dragCurrentPos = mousePos;
+            }
         }
-        else if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
+        else if (auto mouseReleased = event.getIf<sf::Event::MouseButtonReleased>())
         {
-            isDragging = false;
-            selectionBounds = getSelectionBounds();
+            if (mouseReleased->button == sf::Mouse::Button::Left)
+            {
+                isDragging = false;
+                selectionBounds = getSelectionBounds();
+            }
         }
     }
 
@@ -38,7 +44,7 @@ public:
         {
             dragCurrentPos = mousePos;
             sf::Vector2f size = dragCurrentPos - dragStartPos;
-            selectionRect.setPosition(std::min(dragStartPos.x, dragCurrentPos.x), std::min(dragStartPos.y, dragCurrentPos.y));
+            selectionRect.setPosition({std::min(dragStartPos.x, dragCurrentPos.x), std::min(dragStartPos.y, dragCurrentPos.y)});
             selectionRect.setSize(sf::Vector2f(std::abs(size.x), std::abs(size.y)));
         }
     }
@@ -51,12 +57,12 @@ public:
         }
     }
 
-    void getSelected(std::vector<Infrastructure*> &infrastructures)
+    void getSelected(std::vector<Infrastructure *> &infrastructures)
     {
         selectedInfrastructures.clear();
         for (auto &infra : infrastructures)
         {
-            if (selectionBounds.intersects(infra->rectRender.getGlobalBounds()))
+            if (selectionBounds.findIntersection(infra->rectRender.getGlobalBounds()).has_value())
             {
                 selectedInfrastructures.push_back(infra);
             }
@@ -78,10 +84,8 @@ private:
     sf::FloatRect getSelectionBounds() const
     {
         return sf::FloatRect(
-            std::min(dragStartPos.x, dragCurrentPos.x),
-            std::min(dragStartPos.y, dragCurrentPos.y),
-            std::abs(dragCurrentPos.x - dragStartPos.x),
-            std::abs(dragCurrentPos.y - dragStartPos.y));
+            {std::min(dragStartPos.x, dragCurrentPos.x), std::min(dragStartPos.y, dragCurrentPos.y)},
+            {std::abs(dragCurrentPos.x - dragStartPos.x), std::abs(dragCurrentPos.y - dragStartPos.y)});
     }
 };
 

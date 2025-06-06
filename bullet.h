@@ -20,7 +20,7 @@ public:
     {
         renderer.setRadius(blockSize * 0.2f);
         renderer.setFillColor(sf::Color::Black);
-        renderer.setOrigin(renderer.getRadius(), renderer.getRadius());
+        renderer.setOrigin({renderer.getRadius(), renderer.getRadius()});
         target = enemy;
         pos = position;
         active = true;

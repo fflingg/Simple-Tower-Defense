@@ -10,8 +10,8 @@ const int gridRow = 20;
 const int gridColumn = 20;
 
 const std::vector<std::vector<int>> gridMap = {
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 3, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     {0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -69,7 +69,7 @@ void initGrid(std::vector<std::vector<Block>> &blocks, const int gridRow, const 
             blocks[row][col].rectRender.setSize(sf::Vector2f(blockSize, blockSize));
             blocks[row][col].rectRender.setOutlineThickness(0);
             blocks[row][col].rectRender.setOutlineColor(sf::Color::Black);
-            if (gridMap[row][col] == 0)
+            if (gridMap[row][col] == 0 ||gridMap[row][col] == 3)
             {
                 blocks[row][col].rectRender.setFillColor(lightGray);
                 blocks[row][col].occupy = Empty;
@@ -86,7 +86,7 @@ void initGrid(std::vector<std::vector<Block>> &blocks, const int gridRow, const 
             }
             float x = col * blockSize;
             float y = row * blockSize;
-            blocks[row][col].rectRender.setPosition(x, y);
+            blocks[row][col].rectRender.setPosition({x, y});
         }
     }
 }

@@ -136,7 +136,7 @@ void setInfrastructure(InfrastructureName target, int rowPos, int colPos, std::v
         aTower->rectRender.setSize(sf::Vector2f(blockSize, blockSize));
         float x = colPos * blockSize;
         float y = rowPos * blockSize;
-        aTower->rectRender.setPosition(x, y);
+        aTower->rectRender.setPosition({x, y});
         aTower->rectRender.setFillColor(sf::Color::Yellow);
 
         infrastructures.push_back(aTower);
@@ -158,7 +158,7 @@ void drawAttackRange(sf::RenderWindow &window, const Infrastructure &infra)
                 {
                     sf::RectangleShape block;
                     block.setSize(sf::Vector2f(blockSize, blockSize));
-                    block.setPosition(c * blockSize, r * blockSize);
+                    block.setPosition({c * blockSize, r * blockSize});
                     block.setFillColor(sf::Color(255, 255, 0, 50));
                     block.setOutlineColor(sf::Color::Yellow);
                     block.setOutlineThickness(1);
