@@ -61,6 +61,7 @@ public:
             {
                 pos = targetPos;
                 isMoving = false;
+                targetPosRenderer.setFillColor(sf::Color::Transparent);
             }
             else
             {
