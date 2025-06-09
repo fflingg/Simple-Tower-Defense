@@ -89,11 +89,8 @@ int main()
             {
                 if (mouseButtonEvent->button == sf::Mouse::Button::Left)
                 {
-                    boxSelection.getSelected(infrastructures);
-                    for (auto *infra : boxSelection.selectedInfrastructures)
-                    {
-                        infra->activateAttackRangeView = true;
-                    }
+                    boxSelection.getSelected();
+
                 }
             }
 
@@ -103,24 +100,24 @@ int main()
                 if (mouseButtonEvent->button == sf::Mouse::Button::Left && !preBuilding)
                 {
                     bool clickedOnInfrastructure = false;
-                    for (auto &infra : infrastructures)
+                    for (auto &selectable : boxSelection.allSelectables)
                     {
-                        if (infra->rectRender.getGlobalBounds().contains(gameMousePos))
+                        if (selectable->getGlobalBounds().contains(gameMousePos))
                         {
-                            infra->activateAttackRangeView = true;
+                            selectable->setSelected(true) ;
                             clickedOnInfrastructure = true;
                         }
                         else
                         {
-                            infra->activateAttackRangeView = false;
+                            selectable->setSelected(false) ;
                         }
                     }
 
                     if (!clickedOnInfrastructure)
                     {
-                        for (auto &infra : infrastructures)
+                        for (auto &selectable : boxSelection.allSelectables)
                         {
-                            infra->activateAttackRangeView = false;
+                            selectable->setSelected(false) ;
                         }
                     }
                 }
@@ -140,7 +137,7 @@ int main()
         gameView.move(movement * deltaTime);
 
         // update for boxselection
-        boxSelection.update(gameMousePos);
+        boxSelection.update(gameMousePos,infrastructures);
 
         // UI block hover effect
         if (yellowBlock.getGlobalBounds().contains(mousePos))

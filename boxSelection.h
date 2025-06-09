@@ -4,11 +4,14 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include "infrastructure.h"
+#include "worker.h"
+#include "selectable.h"
 
 class BoxSelection
 {
 public:
-    std::vector<Infrastructure *> selectedInfrastructures;
+    std::vector<Selectable *> allSelectables;
+    std::vector<Selectable *> selectedObjects;
     BoxSelection()
     {
         isDragging = false;
@@ -38,7 +41,7 @@ public:
         }
     }
 
-    void update(const sf::Vector2f &mousePos)
+    void update(const sf::Vector2f &mousePos, const std::vector<Infrastructure *> &infrastructures)
     {
         if (isDragging)
         {
@@ -47,8 +50,16 @@ public:
             selectionRect.setPosition({std::min(dragStartPos.x, dragCurrentPos.x), std::min(dragStartPos.y, dragCurrentPos.y)});
             selectionRect.setSize(sf::Vector2f(std::abs(size.x), std::abs(size.y)));
         }
+
+        //update with all selectables outside
+        allSelectables.clear();
+        for (auto *infra : infrastructures)
+        {
+            allSelectables.push_back(static_cast<Selectable *>(infra));
+        }
     }
 
+    
     void draw(sf::RenderWindow &window)
     {
         if (isDragging)
@@ -57,14 +68,19 @@ public:
         }
     }
 
-    void getSelected(std::vector<Infrastructure *> &infrastructures)
+    void getSelected()
     {
-        selectedInfrastructures.clear();
-        for (auto &infra : infrastructures)
+        selectedObjects.clear();
+        for (auto &object : allSelectables)
         {
-            if (selectionBounds.findIntersection(infra->rectRender.getGlobalBounds()).has_value())
+            if (selectionBounds.findIntersection(object->getGlobalBounds()).has_value())
             {
-                selectedInfrastructures.push_back(infra);
+                object->setSelected(true);
+                selectedObjects.push_back(object);
+            }
+            else
+            {
+                object->setSelected(false);
             }
         }
     }

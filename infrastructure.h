@@ -6,6 +6,7 @@
 #include "grid.h"
 #include "bullet.h"
 #include "enemy.h"
+#include "selectable.h"
 
 using namespace std;
 
@@ -16,7 +17,7 @@ enum InfrastructureName
     Mine
 };
 
-class Infrastructure
+class Infrastructure : public Selectable
 {
 public:
     int health;
@@ -33,9 +34,25 @@ public:
     vector<Bullet *> bullets;
     float attackInterval;
     sf::Clock attackClock;
+    bool selected = false;
     virtual void attackAt(Enemy *target) {};
     virtual void update(std::vector<Enemy *> enemies) {};
     virtual void lateUpdate(std::vector<Enemy *> enemies) {}; // delete bullets aiming at dead enemies
+
+    sf::FloatRect getGlobalBounds() const
+    {
+        return rectRender.getGlobalBounds();
+    }
+
+    void setSelected(bool isSelected)
+    {
+        selected = isSelected;
+    }
+
+    bool isSelected() const
+    {
+        return selected;
+    }
 };
 
 class ArrowTower : public Infrastructure
@@ -101,13 +118,16 @@ public:
         {
             bullet->update();
         }
+
+            activateAttackRangeView = (selected? true : false);
     }
 
     void lateUpdate(std::vector<Enemy *> enemies)
     {
         for (auto &bullet : bullets)
         {
-            if(!bullet->target->alive){
+            if (!bullet->target->alive)
+            {
                 bullet->active = false;
             }
         }
