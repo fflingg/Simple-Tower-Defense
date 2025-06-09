@@ -41,7 +41,7 @@ public:
         }
     }
 
-    void update(const sf::Vector2f &mousePos, const std::vector<Infrastructure *> &infrastructures)
+    void update(const sf::Vector2f &mousePos, const std::vector<Infrastructure *> &infrastructures, Workers workers)
     {
         if (isDragging)
         {
@@ -51,15 +51,18 @@ public:
             selectionRect.setSize(sf::Vector2f(std::abs(size.x), std::abs(size.y)));
         }
 
-        //update with all selectables outside
+        // update with all selectables outside
         allSelectables.clear();
         for (auto *infra : infrastructures)
         {
             allSelectables.push_back(static_cast<Selectable *>(infra));
         }
+        for (auto *worker : workers.allWorkers)
+        {
+            allSelectables.push_back(static_cast<Selectable *>(worker));
+        }
     }
 
-    
     void draw(sf::RenderWindow &window)
     {
         if (isDragging)

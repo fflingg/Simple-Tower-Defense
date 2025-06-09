@@ -4,6 +4,7 @@
 #include "infrastructure.h"
 #include "boxSelection.h"
 #include "enemy.h"
+#include "worker.h"
 
 const int parallelResolution = 1920;
 const int verticalResolution = 1080;
@@ -26,6 +27,9 @@ int main()
     sf::RectangleShape smallBlock(sf::Vector2f(blockSize - borderWidth, blockSize - borderWidth)); ///
     smallBlock.setFillColor(sf::Color::Yellow);                                                    ///
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // init workers
+    Workers workers;
 
     std::vector<Infrastructure *> infrastructures;
     // init the blocks
@@ -90,7 +94,6 @@ int main()
                 if (mouseButtonEvent->button == sf::Mouse::Button::Left)
                 {
                     boxSelection.getSelected();
-
                 }
             }
 
@@ -104,12 +107,12 @@ int main()
                     {
                         if (selectable->getGlobalBounds().contains(gameMousePos))
                         {
-                            selectable->setSelected(true) ;
+                            selectable->setSelected(true);
                             clickedOnInfrastructure = true;
                         }
                         else
                         {
-                            selectable->setSelected(false) ;
+                            selectable->setSelected(false);
                         }
                     }
 
@@ -117,7 +120,7 @@ int main()
                     {
                         for (auto &selectable : boxSelection.allSelectables)
                         {
-                            selectable->setSelected(false) ;
+                            selectable->setSelected(false);
                         }
                     }
                 }
@@ -136,8 +139,11 @@ int main()
             movement.x += screenMoveSpeed;
         gameView.move(movement * deltaTime);
 
+        //update for workers
+        workers.update(gameMousePos);
+
         // update for boxselection
-        boxSelection.update(gameMousePos,infrastructures);
+        boxSelection.update(gameMousePos, infrastructures,workers);
 
         // UI block hover effect
         if (yellowBlock.getGlobalBounds().contains(mousePos))
@@ -201,6 +207,8 @@ int main()
         }
         enemyLateUpdate(enemies);
 
+
+
         // Rendering
         window.clear(sf::Color::White);
 
@@ -235,6 +243,9 @@ int main()
                 window.draw(bullet->renderer);
             }
         }
+
+        // draw workers
+        workers.draw(window);
 
         // draw selection box
         boxSelection.draw(window);
