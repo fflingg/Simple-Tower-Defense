@@ -5,9 +5,9 @@
 #include "boxSelection.h"
 #include "enemy.h"
 #include "worker.h"
+#include "ui.h"
 
-const int parallelResolution = 1920;
-const int verticalResolution = 1080;
+
 const float screenMoveSpeed = 1000.f;
 
 int main()
@@ -27,6 +27,8 @@ int main()
     sf::RectangleShape smallBlock(sf::Vector2f(blockSize - borderWidth, blockSize - borderWidth)); ///
     smallBlock.setFillColor(sf::Color::Yellow);                                                    ///
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    UI gameUI;
 
     // init workers
     Workers workers;
@@ -130,11 +132,11 @@ int main()
             movement.x += screenMoveSpeed;
         gameView.move(movement * deltaTime);
 
-        //update for workers
+        // update for workers
         workers.update(gameMousePos);
 
         // update for boxselection
-        boxSelection.update(gameMousePos, infrastructures,workers);
+        boxSelection.update(gameMousePos, infrastructures, workers);
 
         // UI block hover effect
         if (yellowBlock.getGlobalBounds().contains(mousePos))
@@ -198,8 +200,6 @@ int main()
         }
         enemyLateUpdate(enemies);
 
-
-
         // Rendering
         window.clear(sf::Color::White);
 
@@ -244,6 +244,8 @@ int main()
         // render things that won't move
         window.setView(uiView);
         window.draw(yellowBlock);
+
+        gameUI.draw(window);
 
         window.display();
     }
