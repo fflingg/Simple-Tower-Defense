@@ -88,15 +88,6 @@ int main()
                 }
             }
 
-            // Mouse button released for box selection
-            if (const auto *mouseButtonEvent = event->getIf<sf::Event::MouseButtonReleased>())
-            {
-                if (mouseButtonEvent->button == sf::Mouse::Button::Left)
-                {
-                    boxSelection.getSelected();
-                }
-            }
-
             // Mouse button pressed for infrastructure selection
             if (const auto *mouseButtonEvent = event->getIf<sf::Event::MouseButtonPressed>())
             {

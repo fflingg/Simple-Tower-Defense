@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <iostream>
 #include "infrastructure.h"
 #include "worker.h"
 #include "selectable.h"
@@ -34,9 +35,12 @@ public:
         else if (auto mouseReleased = event.getIf<sf::Event::MouseButtonReleased>())
         {
             if (mouseReleased->button == sf::Mouse::Button::Left)
-            {
+            {                
                 isDragging = false;
-                selectionBounds = getSelectionBounds();
+                if((dragStartPos !=  dragCurrentPos)){
+                    selectionBounds = getSelectionBounds();
+                    getSelected();
+                }
             }
         }
     }
