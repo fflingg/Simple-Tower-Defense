@@ -16,24 +16,28 @@ public:
     std::string name;
 
     textbox() = delete; // illegal
-
-    textbox(const std::string &uiName, const std::string &content, const sf::Font &font, const sf::Vector2f &position, const sf::Vector2f &size) : name(uiName), text(font, content)
+    
+    //name, content, font, size, position, relative position of text
+    textbox(const std::string &uiName, const std::string &content, const sf::Font &font, const sf::Vector2f &position, const sf::Vector2f &size, const sf::Vector2f &textAlignment = {0.5f, 0.5f}) : name(uiName), text(font, content)
     {
-        //set box
+        // set box
         box.setSize(size);
-        box.setFillColor(sf::Color::Transparent);
+        box.setFillColor(sf::Color::White);
         box.setPosition(position);
         box.setOrigin({size.x / 2.f, size.y / 2.f});
         box.setOutlineColor(sf::Color::Black);
         box.setOutlineThickness(5.0f);
 
-        //set text
-        text.setCharacterSize(24);
+        // set text
+        text.setCharacterSize(36);
         text.setFillColor(sf::Color::Black);
         sf::FloatRect textBounds = text.getLocalBounds();
-        text.setOrigin({textBounds.position.x + textBounds.size.x / 2.f,
-                        textBounds.position.y + textBounds.size.y / 2.f});
-        text.setPosition(position);
+        float textX = position.x - size.x / 2 + textAlignment.x * size.x;
+        float textY = position.y - size.y / 2 + textAlignment.y * size.y;
+        textX -= textBounds.size.x * textAlignment.x;
+        textY -= textBounds.size.y * textAlignment.y;
+        text.setOrigin({0, 0});
+        text.setPosition({textX, textY});
     }
 };
 
@@ -45,13 +49,14 @@ public:
 
     UI()
     {
-        if(font.openFromFile("./assets/font/MesloLGS NF Regular.ttf")){
-            //std::cout << "font loaded" << std::endl;
+        if (font.openFromFile("./assets/font/MesloLGS NF Regular.ttf"))
+        {
+            // std::cout << "font loaded" << std::endl;
         }
-        sf::Vector2f size(300.f, 100.f); 
-        sf::Vector2f position(parallelResolution / 2.f, verticalResolution - size.y / 2.f); 
-        
-        textbox* bottomBox = new textbox("bottomBox","test", font, position, size);
+        sf::Vector2f size(1200.f, 250.f);
+        sf::Vector2f position(parallelResolution / 2.f, verticalResolution - size.y / 2.f);
+
+        textbox *bottomBox = new textbox("bottomBox", "main menu", font, position, size, {0, 0.5});
         allUI.push_back(bottomBox);
     }
 
@@ -59,8 +64,8 @@ public:
     {
         for (auto &textbox : allUI)
         {
-            window.draw(textbox->text);
             window.draw(textbox->box);
+            window.draw(textbox->text);
         }
     }
 };
