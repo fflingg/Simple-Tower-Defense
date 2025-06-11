@@ -4,6 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <iostream>
+#include "button.h"
+#include "prebuild.h"
 
 const int parallelResolution = 1920;
 const int verticalResolution = 1080;
@@ -16,8 +18,8 @@ public:
     std::string name;
 
     textbox() = delete; // illegal
-    
-    //name, content, font, size, position, relative position of text
+
+    // name, content, font, size, position, relative position of text
     textbox(const std::string &uiName, const std::string &content, const sf::Font &font, const sf::Vector2f &position, const sf::Vector2f &size, const sf::Vector2f &textAlignment = {0.5f, 0.5f}) : name(uiName), text(font, content)
     {
         // set box
@@ -46,6 +48,7 @@ class UI
 public:
     std::vector<textbox *> allUI;
     sf::Font font;
+    std::vector<PrebuildManager *> prebuildButtons;
 
     UI()
     {
@@ -58,14 +61,58 @@ public:
 
         textbox *bottomBox = new textbox("bottomBox", "main menu", font, position, size, {0, 0.5});
         allUI.push_back(bottomBox);
+
+        float buttonSize = 60.f;                                           // Size of each button
+        float padding = 10.f;                                              // Space between buttons
+        float startX = position.x + padding + buttonSize / 2;              // Left edge of bottomBox + padding
+        float startY = position.y - size.y / 2 + padding + buttonSize / 2; // Middle of bottomBox (since we're using bottom half)
+
+        // Create a 3x3 grid of PrebuildManager buttons
+        for (int row = 0; row < 3; ++row)
+        {
+            for (int col = 0; col < 3; ++col)
+            {
+                float x = startX + col * (buttonSize + padding);
+                float y = startY + row * (buttonSize + padding);
+
+                // Create a new PrebuildManager with different colors for each button
+                sf::Color buttonColor(100 + col * 50, 100 + row * 50, 200); // Vary color based on position
+                PrebuildManager *prebuildBtn = new PrebuildManager(
+                    {x, y},
+                    {buttonSize, buttonSize},
+                    buttonColor);
+
+                prebuildButtons.push_back(prebuildBtn);
+            }
+        }
     }
 
-    void draw(sf::RenderWindow &window)
+    void draw_in_ui_View(sf::RenderWindow &window)
     {
         for (auto &textbox : allUI)
         {
             window.draw(textbox->box);
             window.draw(textbox->text);
+        }
+        for (auto &prebuildButton : prebuildButtons)
+        {
+            prebuildButton->drawUI(window);
+        }
+    }
+
+    void draw_in_game_View(sf::RenderWindow &window)
+    {
+        for (auto &prebuildButton : prebuildButtons)
+        {
+            prebuildButton->drawPreview(window);
+        }
+    }
+
+    void update(sf::Vector2f gameMousePos)
+    {
+        for (auto &prebuildButton : prebuildButtons)
+        {
+            prebuildButton->update(gameMousePos);
         }
     }
 };

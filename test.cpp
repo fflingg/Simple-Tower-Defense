@@ -7,7 +7,6 @@
 #include "worker.h"
 #include "ui.h"
 
-
 const float screenMoveSpeed = 1000.f;
 
 int main()
@@ -138,6 +137,8 @@ int main()
         // update for boxselection
         boxSelection.update(gameMousePos, infrastructures, workers);
 
+        gameUI.update(gameMousePos);
+
         // UI block hover effect
         if (yellowBlock.getGlobalBounds().contains(mousePos))
         {
@@ -241,11 +242,14 @@ int main()
         // draw selection box
         boxSelection.draw(window);
 
+        gameUI.draw_in_game_View(window);
+
+        ////////////////////////////
         // render things that won't move
         window.setView(uiView);
         window.draw(yellowBlock);
 
-        gameUI.draw(window);
+        gameUI.draw_in_ui_View(window);
 
         window.display();
     }
