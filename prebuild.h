@@ -29,7 +29,6 @@ public:
         if (button.isPressed(mousePos))
         {
             prebuilding = true;
-            button.renderer.setFillColor(sf::Color::Red);
         }
 
         if (prebuilding)
@@ -45,9 +44,6 @@ public:
 
             if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && isBuilding && canBuildHere && !ui_region.contains(mousePos))
             {
-                std::cout << "gamemouse" << gameMousePos.x << " " << gameMousePos.y << std::endl;
-                std::cout << "mouse" << mousePos.x << " " << mousePos.y << std::endl;
-                std::cout << "region" << ui_region.position.x << std::endl;
                 build(col, row, blocks, infrastructures);
                 prebuilding = isBuilding = false;
                 gridPrebuilding(blocks, gridRow, gridColumn, false);

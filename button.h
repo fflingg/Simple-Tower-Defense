@@ -14,6 +14,7 @@ public:
     {
         renderer.setSize(size);
         renderer.setPosition(pos);
+        renderer.setOrigin({size.x / 2.f, size.y / 2.f});
         renderer.setFillColor(color); 
     }
 

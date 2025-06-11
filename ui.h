@@ -50,6 +50,7 @@ public:
     sf::Font font;
     std::vector<PrebuildManager *> prebuildButtons;
     sf::FloatRect bottom_ui_region;
+    std::vector<sf::FloatRect> preset_button_rect; // position of center, as is defined in button
 
     UI()
     {
@@ -61,33 +62,34 @@ public:
         sf::Vector2f size = {1200.f, 250.f};
         sf::Vector2f position = {parallelResolution / 2.f, verticalResolution - 250.f / 2.f}; // position of the center
 
-        bottom_ui_region = {{position.x - size.x / 2.f , position.y - size.y / 2.f }, size}; // rect uses position of top left corner
+        bottom_ui_region = {{position.x - size.x / 2.f, position.y - size.y / 2.f}, size}; // rect uses position of top left corner
 
         textbox *bottomBox = new textbox("bottomBox", "main menu", font, position, size, {0, 0.5});
         allUI.push_back(bottomBox);
 
-        float buttonSize = 60.f;                                           // Size of each button
-        float padding = 10.f;                                              // Space between buttons
-        float startX = position.x + padding + buttonSize / 2;              // Left edge of bottomBox + padding
-        float startY = position.y - size.y / 2 + padding + buttonSize / 2; // Middle of bottomBox (since we're using bottom half)
+        float buttonSize = 70.f;
+        float padding = 10.f;
+        float startX = position.x + size.x / 2 -  padding - buttonSize / 2;
+        float startY = position.y -  padding - buttonSize;
 
-        // Create a 3x3 grid of PrebuildManager buttons
+        // Create a 3x3 grid of preset buttons
         for (int row = 0; row < 3; ++row)
         {
-            for (int col = 0; col < 3; ++col)
+            for (int col = 0; col < 4; ++col)
             {
-                float x = startX + col * (buttonSize + padding);
+                float x = startX - col * (buttonSize + padding);
                 float y = startY + row * (buttonSize + padding);
-
-                // Create a new PrebuildManager with different colors for each button
-                sf::Color buttonColor(100 + col * 50, 100 + row * 50, 200); // Vary color based on position
-                ArrowTower_Prebuild *prebuildBtn = new ArrowTower_Prebuild(
-                    {x, y},
-                    {buttonSize, buttonSize},
-                    buttonColor);
-
-                prebuildButtons.push_back(prebuildBtn);
+                preset_button_rect.push_back({{x, y}, {buttonSize, buttonSize}});
             }
+        }
+
+        for (int i = 0; i < 12; i++)
+        {
+            ArrowTower_Prebuild *prebuildBtn = new ArrowTower_Prebuild(
+                preset_button_rect[i].position,
+                preset_button_rect[i].size,
+                sf::Color::Yellow);
+            prebuildButtons.push_back(prebuildBtn);
         }
     }
 
@@ -118,6 +120,18 @@ public:
         {
             prebuildButton->update(mousePos, gameMousePos, blocks, infrastructures, bottom_ui_region);
         }
+    }
+
+    bool isprebuilding()
+    {
+        for (auto &prebuildButton : prebuildButtons)
+        {
+            if (prebuildButton->prebuilding)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 };
 

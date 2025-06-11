@@ -16,16 +16,7 @@ int main()
     sf::View uiView = window.getDefaultView();
     sf::View gameView = window.getView();
 
-    // UI for prebuilding/////////////////////////////////////////////////////////////////////////////////////
-    sf::RectangleShape yellowBlock(sf::Vector2f(150.f, 150.f));                                    ///
-    yellowBlock.setFillColor(sf::Color::Yellow);                                                   ///
-    yellowBlock.setPosition({0, 1080.f - 200.f});                                                  ///
-    bool preBuilding = false;                                                                      ///
-    bool isBuilding = false;                                                                       ///
-    bool canBuildHere = true;                                                                      ///
-    sf::RectangleShape smallBlock(sf::Vector2f(blockSize - borderWidth, blockSize - borderWidth)); ///
-    smallBlock.setFillColor(sf::Color::Yellow);                                                    ///
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
     UI gameUI;
 
@@ -92,7 +83,7 @@ int main()
             // Mouse button pressed for infrastructure selection
             if (const auto *mouseButtonEvent = event->getIf<sf::Event::MouseButtonPressed>())
             {
-                if (mouseButtonEvent->button == sf::Mouse::Button::Left && !preBuilding)
+                if (mouseButtonEvent->button == sf::Mouse::Button::Left && !gameUI.isprebuilding())
                 {
                     bool clickedOnInfrastructure = false;
                     for (auto &selectable : boxSelection.allSelectables)
@@ -139,50 +130,8 @@ int main()
 
         gameUI.update(mousePos,gameMousePos,blocks,infrastructures);
 
-        // UI block hover effect
-        if (yellowBlock.getGlobalBounds().contains(mousePos))
-        {
-            yellowBlock.setFillColor(sf::Color(200, 200, 0));
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
-            {
-                preBuilding = true;
-                isBuilding = false;
-            }
-        }
-        else
-        {
-            yellowBlock.setFillColor(sf::Color::Yellow);
-        }
 
-        // set the position for pre-building
-        if (preBuilding)
-        {
-            canBuildHere = true;
-            int col = static_cast<int>(floor(gameMousePos.x / blockSize));
-            int row = static_cast<int>(floor(gameMousePos.y / blockSize));
-            float snappedX = col * blockSize;
-            float snappedY = row * blockSize;
-            smallBlock.setPosition({snappedX, snappedY});
 
-            gridPrebuilding(blocks, gridRow, gridColumn, true);
-            canBuildHere = JudgeCanBuildHere(blocks, row, col);
-
-            // Check for mouse events in pre-building mode
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && isBuilding && canBuildHere)
-            {
-                setInfrastructure(ArrowTowerType, row, col, blocks, infrastructures);
-                preBuilding = isBuilding = false;
-                gridPrebuilding(blocks, gridRow, gridColumn, false);
-            }
-
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
-            {
-                preBuilding = isBuilding = false;
-                gridPrebuilding(blocks, gridRow, gridColumn, false);
-            }
-
-            isBuilding = true;
-        }
 
         // update for tower attack
         for (auto &infra : infrastructures)
@@ -214,10 +163,7 @@ int main()
             }
         }
 
-        if (preBuilding)
-        {
-            window.draw(smallBlock);
-        }
+
 
         // draw the enemy
         for (auto &enemy : enemies)
@@ -247,7 +193,6 @@ int main()
         ////////////////////////////
         // render things that won't move
         window.setView(uiView);
-        window.draw(yellowBlock);
 
         gameUI.draw_in_ui_View(window);
 
