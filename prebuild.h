@@ -6,6 +6,7 @@
 #include "grid.h"
 #include "cmath"
 #include "infrastructure.h"
+#include <iostream>
 
 class PrebuildManager
 {
@@ -23,7 +24,7 @@ public:
         previewBlock.setFillColor(sf::Color::Yellow);
     };
 
-    void update(sf::Vector2f mousePos, sf::Vector2f gameMousePos, std::vector<std::vector<Block>> &blocks, std::vector<Infrastructure *> &infrastructures)
+    void update(sf::Vector2f mousePos, sf::Vector2f gameMousePos, std::vector<std::vector<Block>> &blocks, std::vector<Infrastructure *> &infrastructures, sf::FloatRect ui_region)
     {
         if (button.isPressed(mousePos))
         {
@@ -42,8 +43,11 @@ public:
             gridPrebuilding(blocks, gridRow, gridColumn, true);
             bool canBuildHere = JudgeCanBuildHere(blocks, row, col);
 
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && isBuilding && canBuildHere)
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && isBuilding && canBuildHere && !ui_region.contains(mousePos))
             {
+                std::cout << "gamemouse" << gameMousePos.x << " " << gameMousePos.y << std::endl;
+                std::cout << "mouse" << mousePos.x << " " << mousePos.y << std::endl;
+                std::cout << "region" << ui_region.position.x << std::endl;
                 build(col, row, blocks, infrastructures);
                 prebuilding = isBuilding = false;
                 gridPrebuilding(blocks, gridRow, gridColumn, false);

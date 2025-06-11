@@ -49,6 +49,7 @@ public:
     std::vector<textbox *> allUI;
     sf::Font font;
     std::vector<PrebuildManager *> prebuildButtons;
+    sf::FloatRect bottom_ui_region;
 
     UI()
     {
@@ -56,8 +57,11 @@ public:
         {
             // std::cout << "font loaded" << std::endl;
         }
-        sf::Vector2f size(1200.f, 250.f);
-        sf::Vector2f position(parallelResolution / 2.f, verticalResolution - size.y / 2.f);
+
+        sf::Vector2f size = {1200.f, 250.f};
+        sf::Vector2f position = {parallelResolution / 2.f, verticalResolution - 250.f / 2.f}; // position of the center
+
+        bottom_ui_region = {{position.x - size.x / 2.f , position.y - size.y / 2.f }, size}; // rect uses position of top left corner
 
         textbox *bottomBox = new textbox("bottomBox", "main menu", font, position, size, {0, 0.5});
         allUI.push_back(bottomBox);
@@ -108,11 +112,11 @@ public:
         }
     }
 
-    void update(sf::Vector2f mousePos,sf::Vector2f gameMousePos,std::vector<std::vector<Block>> &blocks,std::vector<Infrastructure *> &infrastructures)
+    void update(sf::Vector2f mousePos, sf::Vector2f gameMousePos, std::vector<std::vector<Block>> &blocks, std::vector<Infrastructure *> &infrastructures)
     {
         for (auto &prebuildButton : prebuildButtons)
         {
-            prebuildButton->update(mousePos,gameMousePos,blocks,infrastructures);
+            prebuildButton->update(mousePos, gameMousePos, blocks, infrastructures, bottom_ui_region);
         }
     }
 };
