@@ -17,10 +17,10 @@ public:
         renderer.setFillColor(color); 
     }
 
-    bool isPressed(sf::Vector2f gameMousePos)
+    bool isPressed(sf::Vector2f mousePos)
     {
         sf::FloatRect bounds = renderer.getGlobalBounds();
-        if (bounds.contains(gameMousePos) && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+        if (bounds.contains(mousePos) && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
         {
             return true;
         }

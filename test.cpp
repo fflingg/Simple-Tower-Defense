@@ -137,7 +137,7 @@ int main()
         // update for boxselection
         boxSelection.update(gameMousePos, infrastructures, workers);
 
-        gameUI.update(gameMousePos);
+        gameUI.update(mousePos,gameMousePos,blocks,infrastructures);
 
         // UI block hover effect
         if (yellowBlock.getGlobalBounds().contains(mousePos))

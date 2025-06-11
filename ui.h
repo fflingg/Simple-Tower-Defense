@@ -77,7 +77,7 @@ public:
 
                 // Create a new PrebuildManager with different colors for each button
                 sf::Color buttonColor(100 + col * 50, 100 + row * 50, 200); // Vary color based on position
-                PrebuildManager *prebuildBtn = new PrebuildManager(
+                ArrowTower_Prebuild *prebuildBtn = new ArrowTower_Prebuild(
                     {x, y},
                     {buttonSize, buttonSize},
                     buttonColor);
@@ -108,11 +108,11 @@ public:
         }
     }
 
-    void update(sf::Vector2f gameMousePos)
+    void update(sf::Vector2f mousePos,sf::Vector2f gameMousePos,std::vector<std::vector<Block>> &blocks,std::vector<Infrastructure *> &infrastructures)
     {
         for (auto &prebuildButton : prebuildButtons)
         {
-            prebuildButton->update(gameMousePos);
+            prebuildButton->update(mousePos,gameMousePos,blocks,infrastructures);
         }
     }
 };
