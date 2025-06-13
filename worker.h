@@ -128,7 +128,14 @@ public:
             {
                 if (worker->isSelected())
                 {
-                    worker->setTargetPosition(gameMousePos);
+                    const int regionRadius = 50.0f; // modify as needed
+                    const float regionAngle = 2*M_PI;
+                    int r=rand() % regionRadius;
+                    int theta = (float)rand()/RAND_MAX * regionAngle;
+                    sf::Vector2f targetPos = sf::Vector2f(
+                        gameMousePos.x + r * std::cos(theta),
+                        gameMousePos.y + r * std::sin(theta));
+                    worker->setTargetPosition(targetPos);
                 }
             }
         }
