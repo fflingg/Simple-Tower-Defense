@@ -57,9 +57,9 @@ static std::vector<std::pair<int, int>> probe(int length, int width, int row,
     return directions;
 }
 
-static int calDist(IntField map, int row, int col)
+static int calDist(IntField map, int row, int col, int path, int target)
 {
-    if (map[row][col] == 1)
+    if (map[row][col] == target)
     {
         return 0; // already reached target
     }
@@ -74,18 +74,18 @@ static int calDist(IntField map, int row, int col)
     for (auto dir : directions)
     {
         int next = map[row + dir.first][col + dir.second]; // next step
-        if (next == 0)
-        {
-            continue; // not on path
-        }
-        else if (next == 1)
+        if (next == target)
         {
             return 1; // one step away from target
         }
-        else
+        else if (next == path)
         { // still on path
-            int nextDist = calDist(map, row + dir.first, col + dir.second);
+            int nextDist = calDist(map, row + dir.first, col + dir.second, path, target);
             dist = nextDist < dist ? nextDist : dist;
+        }
+        else
+        {
+            continue; // not on path
         }
     }
     return dist + 1;
@@ -99,7 +99,7 @@ static std::pair<int, int> calFlow(IntField map, int row, int col)
     bool hasWayOut = false;
     for (auto dir : directions)
     {
-        int dist = calDist(map, row + dir.first, col + dir.second);
+        int dist = calDist(map, row + dir.first, col + dir.second, 2, 1);
         if (dist != map.size() * map[row].size())
         {
             hasWayOut = true;
