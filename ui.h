@@ -6,6 +6,7 @@
 #include <iostream>
 #include "button.h"
 #include "prebuild.h"
+#include "resourceManager.h"
 
 const int parallelResolution = 1920;
 const int verticalResolution = 1080;
@@ -41,6 +42,10 @@ public:
         text.setOrigin({0, 0});
         text.setPosition({textX, textY});
     }
+
+    void updateText(const std::string& newContent) {
+        text.setString(newContent);
+    }
 };
 
 class UI
@@ -51,6 +56,8 @@ public:
     std::vector<PrebuildManager *> prebuildButtons;
     sf::FloatRect bottom_ui_region;
     std::vector<sf::FloatRect> preset_button_rect; // position of center, as is defined in button
+    int resource = 0;
+    int resourceIncreaseRate;
 
     UI()
     {
@@ -66,6 +73,9 @@ public:
 
         textbox *bottomBox = new textbox("bottomBox", "main menu", font, position, size, {0, 0.5});
         allUI.push_back(bottomBox);
+
+        textbox *resourceBox = new textbox("resourceBox", to_string(resource) + " + " + to_string(resourceIncreaseRate), font, {parallelResolution / 2.f + 100.f, verticalResolution - 250.f / 2.f}, {200.f, 100.f}, {0, 0});
+        allUI.push_back(resourceBox);
 
         float buttonSize = 70.f;
         float padding = 10.f;
@@ -114,11 +124,19 @@ public:
         }
     }
 
-    void update(sf::Vector2f mousePos, sf::Vector2f gameMousePos, std::vector<std::vector<Block>> &blocks, std::vector<Infrastructure *> &infrastructures)
+    void update(sf::Vector2f mousePos, sf::Vector2f gameMousePos, std::vector<std::vector<Block>> &blocks, std::vector<Infrastructure *> &infrastructures, const ResourceManager &resourceManager)
     {
         for (auto &prebuildButton : prebuildButtons)
         {
             prebuildButton->update(mousePos, gameMousePos, blocks, infrastructures, bottom_ui_region);
+        }
+        resource = resourceManager.resource;
+        resourceIncreaseRate = resourceManager.increaseRate;
+        for (auto &textbox : allUI)
+        {
+            if(textbox->name == "resourceBox"){
+                textbox->updateText(to_string(resource) + " + " + to_string(resourceIncreaseRate));
+            }
         }
     }
 

@@ -6,6 +6,7 @@
 #include "enemy.h"
 #include "worker.h"
 #include "ui.h"
+#include "resourceManager.h"
 
 const float screenMoveSpeed = 1000.f;
 
@@ -19,6 +20,7 @@ int main()
 
 
     UI gameUI;
+    ResourceManager resourceManager;
 
     // init workers
     Workers workers;
@@ -128,10 +130,10 @@ int main()
         // update for boxselection
         boxSelection.update(gameMousePos, infrastructures, workers);
 
-        gameUI.update(mousePos,gameMousePos,blocks,infrastructures);
+        gameUI.update(mousePos,gameMousePos,blocks,infrastructures,resourceManager);
 
 
-
+        resourceManager.update();
 
         // update for tower attack
         for (auto &infra : infrastructures)
