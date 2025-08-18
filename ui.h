@@ -124,11 +124,11 @@ public:
         }
     }
 
-    void update(sf::Vector2f mousePos, sf::Vector2f gameMousePos, std::vector<std::vector<Block>> &blocks, std::vector<Infrastructure *> &infrastructures, const ResourceManager &resourceManager)
+    void update(sf::Vector2f mousePos, sf::Vector2f gameMousePos, std::vector<std::vector<Block>> &blocks, std::vector<Infrastructure *> &infrastructures, ResourceManager &resourceManager)
     {
         for (auto &prebuildButton : prebuildButtons)
         {
-            prebuildButton->update(mousePos, gameMousePos, blocks, infrastructures, bottom_ui_region);
+            prebuildButton->update(mousePos, gameMousePos, blocks, infrastructures, bottom_ui_region,resourceManager);
         }
         resource = resourceManager.resource;
         resourceIncreaseRate = resourceManager.increaseRate;

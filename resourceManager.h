@@ -11,7 +11,7 @@ public:
     int increaseRate;
     sf::Clock clock;
     float elapsedTime = 0.f;
-    float updateInterval = 2.f;
+    float updateInterval = 1.f;
     
     ResourceManager()
     {
